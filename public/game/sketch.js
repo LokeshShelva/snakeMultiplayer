@@ -3,6 +3,7 @@ let playersSnakeRef = {}
 let players = []
 socket = io();
 let admin = false;
+let start = false;
 
 // prevent the scrolling of page by keys
 window.addEventListener("keydown", function(e) {
@@ -11,15 +12,27 @@ window.addEventListener("keydown", function(e) {
   }
 }, false);
 
+let btn = document.getElementById("admin_start")
+btn.style.display = "none"
+
+function shoeAdminBtn() {
+  let btn = document.getElementById("admin_start")
+  btn.style.display = "block"
+}
+
+function startGame() {
+  socket.emit('start')
+}
+
 // Game Logic
 const createNewPlayer = (id, username) => {
   const newCanvas = (sketch) => {
     let s;
     let scl = 10;
-    let start = true;
+    let gameOver = false;
 
     function stopGame() {
-      start = false;
+      gameOver = true;
     }
 
     const setPos = (x, y, xs, ys, total) => {
@@ -43,13 +56,13 @@ const createNewPlayer = (id, username) => {
     sketch.draw = function () {
       sketch.translate(0, 25);
       sketch.background(51);
-      if (start) {
+      if (start && !gameOver) {
         // s.death(stopGame);
         s.show();
         s.update();
         // s.remoteUpdate();
         sketch.fill(255, 0, 100);
-      } else {
+      } else if (gameOver){
         sketch.fill(255);
         sketch.textSize(24);
         sketch.textAlign(sketch.CENTER);
@@ -78,7 +91,7 @@ const newPlayableCanvas = (sketch) => {
   let s;
   let scl = 20;
   let food;
-  let start = true;
+  let gameOver = false;
   let width = 600, height= 600;
   let username = localStorage.getItem('snake_username');
 
@@ -87,7 +100,7 @@ const newPlayableCanvas = (sketch) => {
   }
 
   function stopGame() {
-    start = false;
+    gameOver = true;
     socket.emit('death', {id: socket.id})
   }
 
@@ -132,7 +145,7 @@ const newPlayableCanvas = (sketch) => {
   sketch.draw = function () {
     sketch.translate(0, 50);
     sketch.background(51);
-    if (start) {
+    if (start && !gameOver) {
       if (s.eat(food)) {
         pickLocation();
       }
@@ -141,7 +154,7 @@ const newPlayableCanvas = (sketch) => {
       sketch.fill(255, 0, 100);
       sketch.rect(food.x, food.y, scl, scl);
       s.death(stopGame);
-    } else {
+    } else if (gameOver) {
       s.show()
       sketch.fill(255, 0, 100);
       sketch.rect(food.x, food.y, scl, scl);
@@ -190,7 +203,6 @@ const newPlayableCanvas = (sketch) => {
     });
   }
   }
-
 }
 
 socket.on('connect', () => {
@@ -208,6 +220,7 @@ socket.on('connect', () => {
 socket.on('prev users', ({users}) => {
   if(users.length == 1){
     admin = true;
+    shoeAdminBtn()
     return;
   }
   for (let user of users) {
@@ -223,6 +236,10 @@ socket.on('new user', (data) => {
   console.log(data)
   new p5(createNewPlayer(data.id, data.username))
   players.push(data.id)
+})
+
+socket.on('start', () => {
+  start = true;
 })
 
 // Event that recieves the game data

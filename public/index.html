@@ -6,16 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <script src="/socket.io/socket.io.js"></script>
       <script>
-        // var socket = io();
-        // socket.on('connect', (socket) => {
-        //     console.log("connected");
-        // })
-
         const formEvent = (event) => {
             event.preventDefault()
             let roomid = document.getElementById("input").value.toString().trim()
             let username = document.getElementById("username").value
-            // socket.join(roomid);
             localStorage.setItem('snake_username', username);
             window.location.href = `../game?roomid=${roomid}`;
     

@@ -43,6 +43,10 @@ io.on('connection', (client) => {
             id: client.id,
             username
         })
+
+        client.on('start', () => {
+            io.to(roomId).emit('start')
+        })
         
         // event to broadcast the game data 
         client.on('pos', (data) => {
@@ -68,6 +72,4 @@ io.on('connection', (client) => {
             }
         })
     })
-
-
 })
