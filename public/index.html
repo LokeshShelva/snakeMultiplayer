@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        // var socket = io();
+        // socket.on('connect', (socket) => {
+        //     console.log("connected");
+        // })
+
+        const formEvent = (event) => {
+            event.preventDefault()
+            let roomid = document.getElementById("input").value.toString().trim()
+            // socket.join(roomid);
+            window.location.href = `../game?roomid=${roomid}`
+        }
+      </script>
+    </head>
+    <body>
+        <input id="input" autocomplete="off" /><button onclick="formEvent(event)">Send</button>
+    </body>
+</html>
