@@ -11,7 +11,6 @@ let {
 } = require('socket.io')
 let io = new Server(server)
 let users = {}
-// require('./socket')(io)
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
@@ -25,23 +24,28 @@ io.on('connection', (client) => {
     console.log(`user connected ${client.id}`)
    
     // add user to the room after connection
-    client.on('enter room', ({roomId}) => {
+    client.on('enter room', ({roomId, username}) => {
+        // add user to local user manager object
         if (users[roomId]) {
-            users[roomId].push(client.id)
+            users[roomId].push({id: client.id, username})
         } else {
-            users[roomId] = [client.id]
+            users[roomId] = [{id: client.id, username}]
         }
 
+        // join the user's room
         client.join(roomId);
+        
         // send all users in the room to the new user
         client.emit('prev users', {users: users[roomId]})
         
+        // broadcast the new user to all users in the room
         client.to(roomId).emit('new user', {
-            id: client.id
+            id: client.id,
+            username
         })
         
+        // event to broadcast the game data 
         client.on('pos', (data) => {
-            // console.log(data)m
             client.to(roomId).emit('pos', data)
         })
 
@@ -54,7 +58,7 @@ io.on('connection', (client) => {
             client.leave(roomId)
             console.log(`User disconneted ${client.id}`)
             Object.keys(users).forEach(room => {
-                users[room] = users[room].filter(user => user !== client.id)
+                users[room] = users[room].filter(user => user.id !== client.id)
             })
             
             for(let room in users){
@@ -67,8 +71,3 @@ io.on('connection', (client) => {
 
 
 })
-
-
-// io.of("/").adapter.on("create-room", (room) => {
-//     console.log(`room ${room} was created`);
-// });

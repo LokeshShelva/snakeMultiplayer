@@ -14,12 +14,17 @@
         const formEvent = (event) => {
             event.preventDefault()
             let roomid = document.getElementById("input").value.toString().trim()
+            let username = document.getElementById("username").value
             // socket.join(roomid);
-            window.location.href = `../game?roomid=${roomid}`
+            localStorage.setItem('snake_username', username);
+            window.location.href = `../game?roomid=${roomid}`;
+    
         }
       </script>
     </head>
     <body>
-        <input id="input" autocomplete="off" /><button onclick="formEvent(event)">Send</button>
+        <input id="input" autocomplete="off" />
+        <input id="username" placeholder="Username"/>
+        <button onclick="formEvent(event)">Send</button>
     </body>
 </html>

@@ -4,7 +4,15 @@ let players = []
 socket = io();
 let admin = false;
 
-const createNewPlayer = (id) => {
+// prevent the scrolling of page by keys
+window.addEventListener("keydown", function(e) {
+  if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+      e.preventDefault();
+  }
+}, false);
+
+// Game Logic
+const createNewPlayer = (id, username) => {
   const newCanvas = (sketch) => {
     let s;
     let scl = 10;
@@ -23,7 +31,7 @@ const createNewPlayer = (id) => {
     }
 
     sketch.setup = function () {
-      let canvas = sketch.createCanvas(300, 300);
+      let canvas = sketch.createCanvas(300, 325);
       canvas.parent("otherPlayerContainer");
       sketch.frameRate(15);
       s = new Snake(sketch, scl, sketch.frameRate());
@@ -33,20 +41,37 @@ const createNewPlayer = (id) => {
     }
 
     sketch.draw = function () {
+      sketch.translate(0, 25);
+      sketch.background(51);
       if (start) {
-        sketch.background(51);
         // s.death(stopGame);
         s.show();
         s.update();
         // s.remoteUpdate();
         sketch.fill(255, 0, 100);
+      } else {
+        sketch.fill(255);
+        sketch.textSize(24);
+        sketch.textAlign(sketch.CENTER);
+        sketch.text("Game Over", 150, 120);
+        sketch.textSize(18);
+        sketch.textAlign(sketch.LEFT)
+        sketch.text(username, 50, 160);
+        sketch.text(`Score: ${s.total}`, 50, 180);
+        sketch.noLoop(); 
       }
+      sketch.fill(255);
+      sketch.rect(0, -25, 300, 25);
+      sketch.fill(0);
+      sketch.textSize(12);
+      sketch.textAlign(sketch.RIGHT);
+      sketch.text(username, 300, -5);
+      sketch.textAlign(sketch.LEFT);
+      sketch.text(`Score: ${s.total}`, 0, -5);
     }
   }
   return newCanvas
 }
-
-//Game Logic
 
 const newPlayableCanvas = (sketch) => {
 
@@ -54,6 +79,8 @@ const newPlayableCanvas = (sketch) => {
   let scl = 20;
   let food;
   let start = true;
+  let width = 600, height= 600;
+  let username = localStorage.getItem('snake_username');
 
   function startGame() {
     start = true;
@@ -78,8 +105,8 @@ const newPlayableCanvas = (sketch) => {
   }
 
   function pickLocation() {
-    let cols = sketch.floor(sketch.width / scl);
-    let rows = sketch.floor(sketch.height / scl);
+    let cols = sketch.floor(width / scl);
+    let rows = sketch.floor(height / scl);
     let x, y;
 
     while (true) {
@@ -95,25 +122,47 @@ const newPlayableCanvas = (sketch) => {
   }
 
   sketch.setup = function () {
-    let canvas = sketch.createCanvas(600, 600);
+    let canvas = sketch.createCanvas(600, 650);
     canvas.parent("gameContainer");
     s = new Snake(sketch, scl);
     sketch.frameRate(15);
     pickLocation();
   }
-
+  
   sketch.draw = function () {
+    sketch.translate(0, 50);
+    sketch.background(51);
     if (start) {
-      sketch.background(51);
       if (s.eat(food)) {
         pickLocation();
       }
-      s.update();
       s.show();
+      s.update();
       sketch.fill(255, 0, 100);
       sketch.rect(food.x, food.y, scl, scl);
       s.death(stopGame);
+    } else {
+      s.show()
+      sketch.fill(255, 0, 100);
+      sketch.rect(food.x, food.y, scl, scl);
+      sketch.fill('rgba(0, 0, 0, 0.5)');
+      sketch.rect(0, 0, width, height);
+      sketch.fill(255);
+      sketch.textSize(32);
+      sketch.textAlign(sketch.CENTER);
+      sketch.text("Game Over", width/2, (height/2) - 30);
+      sketch.textSize(24);
+      sketch.text(`Score: ${s.total}`, width / 2, (height / 2) + 10);
+      sketch.noLoop();
     }
+    sketch.fill(255);
+    sketch.rect(0, -50, width, 50);
+    sketch.fill(0);
+    sketch.textSize(22);
+    sketch.textAlign(sketch.LEFT);
+    sketch.text(`Score: ${s.total}`, 0, -10);
+    sketch.textAlign(sketch.RIGHT);
+    sketch.text(username, width, -10);
   }
 
   sketch.keyPressed = function () {
@@ -151,31 +200,32 @@ socket.on('connect', () => {
   // enter a given room after connection
   socket.emit('enter room', {
     roomId: window.location.href.split('/')[4],
+    username: localStorage.getItem('snake_username')
   })
 })
 
-socket.on('new user', (data) => {
-  console.log(data)
-  new p5(createNewPlayer(data.id))
-  players.push(data.id)
-  // players.push({canvas: playerCanvas, id: data.id})
-})
-
+// Event that recieves all the previous users of the room
 socket.on('prev users', ({users}) => {
   if(users.length == 1){
     admin = true;
     return;
   }
   for (let user of users) {
-    if (!playersSnakeRef[user] && user != socket.id) {
-      players.push(user)
-      let c = new p5(createNewPlayer(user))
-      // players[user] = c;
+    if (!playersSnakeRef[user.id] && user.id != socket.id) {
+      players.push(user.id)
+      let c = new p5(createNewPlayer(user.id, user.username))
     }
   }
 })
 
+// Event when a new user joins the room 
+socket.on('new user', (data) => {
+  console.log(data)
+  new p5(createNewPlayer(data.id, data.username))
+  players.push(data.id)
+})
 
+// Event that recieves the game data
 socket.on('pos', (data) => {
   let snake = playersSnakeRef[data.id]
   if (snake) {
