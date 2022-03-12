@@ -22,31 +22,34 @@ app.get('/game', (req, res) => {
 
 io.on('connection', (client) => {
     console.log(`user connected ${client.id}`)
-   
+    
     // add user to the room after connection
-    client.on('enter room', ({roomId, username}) => {
-        // add user to local user manager object
-        if (users[roomId]) {
-            users[roomId].push({id: client.id, username})
-        } else {
-            users[roomId] = [{id: client.id, username}]
-        }
+    client.on('enter room', ({roomId}) => {
+        
+        client.on('join game', ({username}) => {
+            // add user to local user manager object
+            if (users[roomId]) {
+                users[roomId].push({id: client.id, username})
+            } else {
+                users[roomId] = [{id: client.id, username}]
+            }
 
+            // broadcast the new user to all users in the room
+            client.to(roomId).emit('new user', {
+                id: client.id,
+                username
+            })
+        })
+        
         // join the user's room
         client.join(roomId);
         
-        // send all users in the room to the new user
-        client.emit('prev users', {users: users[roomId]})
-        
-        // broadcast the new user to all users in the room
-        client.to(roomId).emit('new user', {
-            id: client.id,
-            username
-        })
-
         client.on('start', () => {
             io.to(roomId).emit('start')
         })
+        
+        // send all users in the room to the new user
+        client.emit('prev users', {users: users[roomId]})
         
         // event to broadcast the game data 
         client.on('pos', (data) => {
@@ -59,6 +62,7 @@ io.on('connection', (client) => {
         
         // remove user after they discoonnect
         client.on('disconnect', () => {
+            client.to(roomId).emit('user disconnect', {id: client.id})
             client.leave(roomId)
             console.log(`User disconneted ${client.id}`)
             Object.keys(users).forEach(room => {

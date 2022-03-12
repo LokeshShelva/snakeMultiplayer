@@ -187,7 +187,7 @@ const newPlayableCanvas = (sketch) => {
       s.dir(0, 1);
       s.prevdir = 3;
     } else if (sketch.keyCode === sketch.RIGHT_ARROW && s.prevdir != 4) {
-      s.dir(1, 0);
+      s.dir(1, 0);  
       s.prevdir = 2;
     } else if (sketch.keyCode === sketch.LEFT_ARROW && s.prevdir != 2) {
       s.dir(-1, 0);

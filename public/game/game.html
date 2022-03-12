@@ -14,12 +14,16 @@
     <div class="container">
         <div>
             <div id="gameContainer"></div>
-            <button id="admin_start" onclick="startGame()">Start Game</button>
+            <!-- <button id="admin_start" onclick="startGame()">Start Game</button> -->
+            <button onclick="startGame(event)">Enter</button>
+            <input id="username" placeholder="username">
         </div>
         <div id="otherPlayerContainer"></div>
     </div>
-    <script src="./sketch.js"></script>
+    <!-- <script src="./sketch.js"></script> -->
+    <script src="./preventScrolling.js"></script>
     <script src="./snake.js"></script>
+    <script src="./newScript.js"></script>
 </body>
 
 </html>
