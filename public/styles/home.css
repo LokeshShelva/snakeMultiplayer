@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body{
+    font-family: 'Montserrat', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+.home {
+    background-color: #f9f4f5;
+    color: #260A0D;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    margin-top: 7%;
+    width: 80%;
+}
+
+.game {
+    background-color: #f9f4f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.game-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    font-weight: 400;
+    margin-bottom: 32px;
+}
+
+.roomid {
+    margin-bottom: 22px;
+}
+
+.left-content {
+    width: 45%;
+}
+
+.title{
+    font-size: 6rem;
+    font-weight: 400;
+    margin-bottom: 32px;
+}
+
+.bold {
+    font-weight: 900;
+}
+
+.subtitle{
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 32px;
+}
+
+.roomid {
+
+}
+
+button.filled {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    padding: 16px 24px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #CF3A49;
+    border-radius: 8px;
+    border: none;
+    transition: background-color ease 400ms;
+}
+
+button.filled:hover {
+    cursor: pointer;
+    background-color: #d8525f;
+}
+
+.roomid {
+    padding: 16px 18px;
+    font-size: 1.25rem;
+    border: none;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.06);
+}

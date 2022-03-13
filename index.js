@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/game', (req, res) => {
-    res.sendFile(__dirname + '/public/game/game.html')
+    res.sendFile(__dirname + '/public/game.html')
 })
 
 io.on('connection', (client) => {

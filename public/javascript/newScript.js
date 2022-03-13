@@ -1,11 +1,5 @@
 let socket = io();
 
-function startGame(e) {
-    start = true
-    currentPlayerRef = new Snake(staticObstacle, scl)
-    socket.emit('join game', {username: e.target.value})
-}
-
 let foods = []
 let playersRef = {}
 let currentPlayerRef;
@@ -19,7 +13,17 @@ let staticObstacle = [
     [1800, 150, 150, 500],
     [1300, 800, 150, 500],
 ]
+let wallImg;
 
+
+function startGame(e) {
+    document.querySelector(".overlay").classList.add('hide')
+    document.querySelector(".input-container").classList.add('hide')
+    // document.querySelector(".overlay").classList.add('hide')
+    start = true
+    currentPlayerRef = new Snake(staticObstacle, scl)
+    socket.emit('join game', {username: e.target.value})
+}
 
 function addRandomFood(){
     for(let i = 0; i < 1000; i++){
@@ -28,8 +32,8 @@ function addRandomFood(){
 }
 
 function endGame() {
-    console.log("death")
-    socket.emit('death', {id: socket.id})
+    document.querySelector(".overlay").classList.remove('hide')
+    document.querySelector(".input-container").classList.remove('hide')
     start = false;
 }
 
@@ -40,18 +44,27 @@ function validPosition(x, y, w, z, x2, y2) {
     return true
 }
 
+function preload() {
+    wallImg = loadImage('../assests/wall.png')
+}
+
 function setup() {
     let canvas = createCanvas(window.innerWidth - 100, window.innerHeight - 100); 
     canvas.parent("gameContainer");
     addRandomFood()
 }
 
+let wx = 0;
+let wy = 0;
+let ws = 1;
 function draw() {
     background(0);
-    fill(51);
+    fill("#202342");
     
     if(start){
-        translate(width /2 -currentPlayerRef.x, height / 2 -currentPlayerRef.y)
+        wx = lerp(wx, width /2 -currentPlayerRef.x, 0.06)
+        wy = lerp(wy, height / 2 -currentPlayerRef.y, 0.06)
+        translate(wx, wy)
         rect(0, 0, worldWidth, worldHeight);
         for(let i = 0; i < foods.length; i++){
             fill(255);
@@ -70,10 +83,13 @@ function draw() {
         currentPlayerRef.update()
         currentPlayerRef.death(endGame)
     } else {
-        let scaleFac = (width / worldWidth) / 1.05
-        scale(scaleFac)
-        translate((width / 2) - (worldWidth * scaleFac) / 2, (height / 2) - (worldHeight * scaleFac) / 2)
-        fill(200);
+            fill("#202342");
+        let scaleFac = (width / worldWidth) / 1.3
+        ws = lerp(ws, scaleFac, 0.008)
+        scale(ws)
+        wx = lerp(wx, (width / 2) - (worldWidth * scaleFac) / 2, 0.08)
+        wy = lerp(wy, (height / 2) - (worldHeight * scaleFac) / 2, 0.08)
+        translate(wx, wy)
         rect(0, 0, worldWidth, worldHeight);
         
         Object.keys(playersRef).forEach(i => {
@@ -85,6 +101,10 @@ function draw() {
     fill(0);
     for(let obs of staticObstacle){
         rect(...obs)
+    }
+
+    for(let i = 0; i < worldWidth / 200; i++){
+        image(wallImg, i * 200, -120, 200, 120)
     }
 }
 

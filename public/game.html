@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./javascript/p5.min.js"></script>
+    <link href="./styles/style.css" rel="stylesheet">
+    <title>SnakeRoyale</title>
+</head>
+
+<body>
+    <div class="container">
+        <div id="gameContainer"></div>
+        <div class="overlay"></div>
+        <!-- <button id="admin_start" onclick="startGame()">Start Game</button> -->
+        <div class="input-container">
+            <input id="username" placeholder="username" class="username-input">
+            <button class="start-game-btn" onclick="startGame(event)">Enter Game</button>
+        </div>
+    </div>
+    <!-- <script src="./sketch.js"></script> -->
+    <script src="./javascript/preventScrolling.js"></script>
+    <script src="./javascript/snake.js"></script>
+    <script src="./javascript/newScript.js"></script>
+</body>
+
+</html>
