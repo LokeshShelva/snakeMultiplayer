@@ -14,6 +14,7 @@ let staticObstacle = [
     [1800, 150, 150, 500],
     [1300, 800, 150, 500],
 ]
+let score = 0;
 let wallTopImg, wallRightImg, wallLeftImg, wallObstacle, wallDownImg, font;
 let wallCornerRight, wallCornerBottomRight, wallCornerBottomLeft, wallCornerLeft;
 let leaderboard = []
@@ -26,6 +27,12 @@ function changeLeaderboard() {
         innerString += `<p class="leaderboard-name">${player.username}</p>`
     }
     leaderboardEl.innerHTML = innerString
+}
+
+function incrementScore() {
+    score = currentPlayerRef.total;
+    let scoreboard = document.querySelector('.scoreboard')
+    scoreboard.innerHTML = `<p class='score'>Score: ${score}</p>`
 }
 
 function startGame(e) {
@@ -111,6 +118,7 @@ function draw() {
         }
         for(let i = 0; i < foods.length; i++){
             if(currentPlayerRef.eat(foods[i])){
+                incrementScore()
                 foods.splice(i, 1);
             }
         }
@@ -227,7 +235,7 @@ socket.on('user disconnect', ({id}) => {
     }
 })
 
-socket.on('leaderboard', ({players}) => {
-    leaderboard = players
-    changeLeaderboard()
-})
+// socket.on('leaderboard', ({players}) => {
+//     leaderboard = players
+//     changeLeaderboard()
+// })
