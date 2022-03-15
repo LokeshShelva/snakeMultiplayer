@@ -1,0 +1,26 @@
+button.filled {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    padding: 16px 24px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: rgb(207, 59, 73);
+    border-radius: 8px;
+    border: none;
+    transition: background-color ease 400ms;
+}
+
+button.filled:hover {
+    cursor: pointer;
+    background-color: #d8525f;
+}
+
+input {
+    font-family: 'Roboto', sans-serif;
+    padding: 16px 18px;
+    font-size: 1.25rem;
+    border: none;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.06);
+}

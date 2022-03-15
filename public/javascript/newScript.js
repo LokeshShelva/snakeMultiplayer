@@ -1,4 +1,5 @@
 let socket = io();
+let scoreUpdateInterval;
 
 let foods = []
 let playersRef = {}
@@ -13,16 +14,33 @@ let staticObstacle = [
     [1800, 150, 150, 500],
     [1300, 800, 150, 500],
 ]
-let wallImg;
+let wallTopImg, wallRightImg, wallLeftImg, wallObstacle, wallDownImg, font;
+let wallCornerRight, wallCornerBottomRight, wallCornerBottomLeft, wallCornerLeft;
+let leaderboard = []
+const colors = ['799496', 'E9EB9E', 'ACC196', 'ED9390', 'FFB997']
 
+function changeLeaderboard() {
+    let leaderboardEl = document.querySelector('.leaderboard-player-list')
+    let innerString = ""
+    for(let player of leaderboard){
+        innerString += `<p class="leaderboard-name">${player.username}</p>`
+    }
+    leaderboardEl.innerHTML = innerString
+}
 
 function startGame(e) {
-    document.querySelector(".overlay").classList.add('hide')
-    document.querySelector(".input-container").classList.add('hide')
     // document.querySelector(".overlay").classList.add('hide')
+    document.querySelector(".input-container").classList.add('hide')
+    let username = document.getElementById('username').value
+    let color = colors[Math.floor(Math.random() * colors.length)]
+    currentPlayerRef = new Snake(staticObstacle, scl, username, color)
+    socket.emit('join game', {username, color})
     start = true
-    currentPlayerRef = new Snake(staticObstacle, scl)
-    socket.emit('join game', {username: e.target.value})
+    scoreUpdateInterval = setInterval(sendScoreUpdate, 5000)
+}
+
+function sendScoreUpdate() {
+    socket.emit('score', {score: currentPlayerRef.total})
 }
 
 function addRandomFood(){
@@ -31,10 +49,20 @@ function addRandomFood(){
     }
 }
 
+function spawnFood() {  
+    if(foods.length < 5000){
+        for(let i = 0; i < 10; i++){
+            foods.push({x: random(0, worldWidth), y: random(0, worldHeight)})
+        }
+    }
+}
+
 function endGame() {
-    document.querySelector(".overlay").classList.remove('hide')
+    // document.querySelector(".overlay").classList.remove('hide')
     document.querySelector(".input-container").classList.remove('hide')
     start = false;
+    clearInterval(scoreUpdateInterval)
+    socket.emit('death', {id: socket.id})
 }
 
 function validPosition(x, y, w, z, x2, y2) {
@@ -44,13 +72,24 @@ function validPosition(x, y, w, z, x2, y2) {
     return true
 }
 
+
 function preload() {
-    wallImg = loadImage('../assests/wall.png')
+    wallObstacle = loadImage('../assests/wall-obstacle.png')
+    wallTopImg = loadImage('../assests/wall-top.png')
+    wallRightImg = loadImage('../assests/wall-right.png')
+    wallLeftImg = loadImage('../assests/wall-left.png')
+    wallDownImg = loadImage('../assests/wall-down.png')
+    wallCornerRight = loadImage('../assests/wall-edge-right.png')
+    wallCornerLeft = loadImage('../assests/wall-edge-left.png')
+    wallCornerBottomLeft = loadImage('../assests/wall-edge-bottom-left.png')
+    wallCornerBottomRight = loadImage('../assests/wall-edge-bottom-right.png')
+    font = loadFont('../fonts/Roboto-Regular.ttf')
 }
 
 function setup() {
     let canvas = createCanvas(window.innerWidth - 100, window.innerHeight - 100); 
     canvas.parent("gameContainer");
+    setInterval(spawnFood, 2000)
     addRandomFood()
 }
 
@@ -58,16 +97,16 @@ let wx = 0;
 let wy = 0;
 let ws = 1;
 function draw() {
-    background(0);
-    fill("#202342");
+    background('#260a0d');
     
+    fill("#260a0d");
     if(start){
         wx = lerp(wx, width /2 -currentPlayerRef.x, 0.06)
         wy = lerp(wy, height / 2 -currentPlayerRef.y, 0.06)
         translate(wx, wy)
         rect(0, 0, worldWidth, worldHeight);
         for(let i = 0; i < foods.length; i++){
-            fill(255);
+            fill('#f9f4f5');
             rect(foods[i].x, foods[i].y, scl / 2, scl / 2)
         }
         for(let i = 0; i < foods.length; i++){
@@ -76,15 +115,15 @@ function draw() {
             }
         }
         Object.keys(playersRef).forEach(i => {
-            playersRef[i].show([185])
+            playersRef[i].show([185], font)
             playersRef[i].update()
         })
-        currentPlayerRef.show([255])
+        currentPlayerRef.show([207, 59, 73], font)
         currentPlayerRef.update()
         currentPlayerRef.death(endGame)
     } else {
-            fill("#202342");
-        let scaleFac = (width / worldWidth) / 1.3
+        fill("#260a0d");
+        let scaleFac = (width / worldWidth) / 1.4
         ws = lerp(ws, scaleFac, 0.008)
         scale(ws)
         wx = lerp(wx, (width / 2) - (worldWidth * scaleFac) / 2, 0.08)
@@ -92,20 +131,32 @@ function draw() {
         translate(wx, wy)
         rect(0, 0, worldWidth, worldHeight);
         
+
         Object.keys(playersRef).forEach(i => {
-            playersRef[i].show([185])
+            playersRef[i].show([185], font)
             playersRef[i].update()
         })
     }
     
     fill(0);
     for(let obs of staticObstacle){
-        rect(...obs)
+        image(wallObstacle, ...obs)
     }
 
-    for(let i = 0; i < worldWidth / 200; i++){
-        image(wallImg, i * 200, -120, 200, 120)
+    for(let i = 0; i < worldWidth / 100; i++){
+        image(wallTopImg, i * 100, -80)
+        image(wallDownImg, i * 100, worldHeight)
     }
+
+    for(let i = 0; i < worldHeight / 100; i++){
+        image(wallRightImg, worldWidth, i * 100)
+        image(wallLeftImg, -80, i * 100)
+    }
+
+    image(wallCornerRight, worldWidth, -80)
+    image(wallCornerLeft, -80, -80)
+    image(wallCornerBottomRight, worldWidth, worldHeight)
+    image(wallCornerBottomLeft, -80, worldHeight)
 }
 
 function keyPressed () {
@@ -143,14 +194,14 @@ socket.on('connect', () => {
 
 socket.on('new user', (data) => {
     console.log("new User: ", data)
-    playersRef[data.id] = new Snake(null, scl)
+    playersRef[data.id] = new Snake(null, scl, data.username, data.color)
 })
 
 socket.on('prev users', ({users}) => {
     if(users){
         for(let user of users){
             if (!playersRef[user.id] && user.id != socket.id) {
-                playersRef[user.id] = new Snake(null, scl)
+                playersRef[user.id] = new Snake(null, scl, user.username, data.color)
             }
         }
     }
@@ -164,14 +215,19 @@ socket.on('pos', (data) => {
 })
 
 socket.on('death', ({id}) => {
+    console.log("disconnected: ", id)
     if(playersRef[id]){
         delete playersRef[id]
     }
 })
 
 socket.on('user disconnect', ({id}) => {
-    console.log("disconnected: ", id)
     if(playersRef[id]){
         delete playersRef[id]
     }
+})
+
+socket.on('leaderboard', ({players}) => {
+    leaderboard = players
+    changeLeaderboard()
 })

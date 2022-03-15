@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/socket.io/socket.io.js"></script>
     <script src="./javascript/p5.min.js"></script>
+    <link rel="stylesheet" href="./styles/global.css">
     <link href="./styles/style.css" rel="stylesheet">
     <title>SnakeRoyale</title>
 </head>
@@ -13,11 +14,15 @@
 <body>
     <div class="container">
         <div id="gameContainer"></div>
-        <div class="overlay"></div>
+        <div class="leaderboard">
+            <p class="leaderboard-title">Leaderboard</p>
+            <div class="leaderboard-player-list"></div>
+        </div>
+        <!-- <div class="overlay"></div> -->
         <!-- <button id="admin_start" onclick="startGame()">Start Game</button> -->
         <div class="input-container">
-            <input id="username" placeholder="username" class="username-input">
-            <button class="start-game-btn" onclick="startGame(event)">Enter Game</button>
+            <input id="username" placeholder="username" class="username-input"> <br/>
+            <button class="start-game-btn filled" onclick="startGame(event)">Enter Game</button>
         </div>
     </div>
     <!-- <script src="./sketch.js"></script> -->

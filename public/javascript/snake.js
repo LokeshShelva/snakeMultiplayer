@@ -77,7 +77,7 @@
 //   };
 // }
 
-function Snake(obstacles, scl, frameRate) {
+function Snake(obstacles, scl, username, color) {
   this.x = 500;
   this.y = 250;
   this.xspeed = 1;
@@ -89,6 +89,8 @@ function Snake(obstacles, scl, frameRate) {
   this.scl = scl;
   this.eating = false;
   this.obstacles = obstacles
+  this.username = username
+  this.color = color
 
   for(let i = 0; i < this.total - 1; i++){
     this.tail.push(createVector(this.x - (i * this.scl), this.y))
@@ -149,7 +151,7 @@ function Snake(obstacles, scl, frameRate) {
       let y1 = ops[1]
       let w = ops[2]
       let h = ops[3]
-      if(this.x > x1 && this.x < x1 + w && this.y > y1 && this.y < y1 + h){
+      if(this.x > x1 && this.x - this.scl < x1 + w && this.y + this.scl > y1 && this.y < y1 + h){
         this.total = 0;
         this.tail = [];
         game();
@@ -178,9 +180,8 @@ function Snake(obstacles, scl, frameRate) {
     this.y = constrain(this.y, 0, worldHeight - this.scl);
   };
 
-  this.show = function (color) {
-    // console.log(this.x, this.y)
-    fill(...color);
+  this.show = function (font) {
+    fill(`#${color}`);
     for (let i = 0; i < this.tail.length; i++) {
       //noStroke();
       if(this.tail[i] != undefined){
@@ -189,5 +190,13 @@ function Snake(obstacles, scl, frameRate) {
     }
     noStroke();
     rect(this.x, this.y, this.scl, this.scl);
+    textSize(18);
+    textFont(font)
+    fill(255);
+    if(this.prevdir == 3){
+      text(this.username, this.x + 25, this.y + 6);
+    } else {
+      text(this.username, this.x, this.y - 12);
+    }
   };
 }

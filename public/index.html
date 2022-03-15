@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/home.css">      
       <script>
         const formEvent = (event) => {
@@ -24,14 +25,29 @@
             <p class="subtitle">The multiplayer snake game. Join a room and stay alive as long as possible. Let the game begin.</p>
             <a href="#enter-game"><button class="filled">Play Game</button></a>
           </div>
+          <div class="right-content">
+            <div class="background-circle"></div>
+            <img class="snake-img" src="./assests/sake-art.png" alt="Abstract Snake Image">
+          </div>
         </div>
       </section>
       <section class="game" id="enter-game">
-        <div class="game-container">
-          <h4 class="game-title">Enter the Room ID</h4>
-          <input id="input" placeholder="Room ID" autocomplete="off" class="roomid"/>
-          <div>
-            <button class="filled" onclick="formEvent(event)">Enter Room</button>
+        <div class="game-outer-container">
+          <div class="instruction-container">
+            <h2 class="instruction-title">Instructions</h2>
+            <ul class="instuction-ul">
+              <li class="instruction">Use Arrows keys to control the snake</li>
+              <li class="instruction">Collect the food to grow and score points</li>
+              <li class="instruction">Don't touch the end of the world or the obstacles present</li>
+              <li class="instruction">Stay alive for as long as possible</li>
+            </ul>
+          </div>
+          <div class="game-container">
+            <h4 class="game-title">Enter the Room ID</h4>
+            <input id="input" placeholder="Room ID" autocomplete="off" class="roomid"/>
+            <div>
+              <button class="filled" onclick="formEvent(event)">Enter Room</button>
+            </div>
           </div>
         </div>
       </section>
