@@ -100,7 +100,27 @@ body{
     /* margin-right: 100px; */
 }
 
+.button-container{
+    display: flex;
+}
 
+a {
+    text-decoration: none;
+}
+
+.btn {
+    margin-right: 16px;
+}
+
+.outline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.outline > svg {
+    margin-left: 8px;
+}
 
 .title{
     font-size: 6rem;

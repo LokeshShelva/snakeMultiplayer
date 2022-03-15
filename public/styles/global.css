@@ -1,10 +1,10 @@
 button.filled {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
-    padding: 16px 24px;
+    padding: 18px 24px;
     font-size: 1rem;
     color: #fff;
-    background-color: rgb(207, 59, 73);
+    background-color: #cf3b49;
     border-radius: 8px;
     border: none;
     transition: background-color ease 400ms;
@@ -13,6 +13,23 @@ button.filled {
 button.filled:hover {
     cursor: pointer;
     background-color: #d8525f;
+}
+
+button.outline {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    padding: 16px 24px;
+    font-size: 1rem;
+    color: #cf3b49;
+    background-color: #f9f4f5;
+    border-radius: 8px;
+    border: 2px solid #cf3b49;
+    transition: background-color ease 400ms;
+}
+
+button.outline:hover {
+    cursor: pointer;
+    background-color: #ffecee;
 }
 
 input {
